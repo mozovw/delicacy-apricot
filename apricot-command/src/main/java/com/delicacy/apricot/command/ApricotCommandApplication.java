@@ -7,9 +7,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class ApricotCommandApplication {
 
     public static void main(String[] args) {
-        /*if (args == null || args.length == 0) {
-            args = new String[]{"-raf","E:\\新建文件夹f","a","b"};
-        }*/
+        if (args == null || args.length == 0) {
+//            args = new String[]{"-eaf","F:\\workspaces\\clion_workspaces\\classic_c_workspace\\经典示例\\003.求整数之积","*.c","utf-8"};
+//            args = new String[]{"-raf","E:\\新建文件夹","*.dea","b","c"};
+            args = new String[]{"-reafp","E:\\新建文件夹","*.dea"};
+        }
         /*List<String> strings = Arrays.asList(args);
         strings = strings.stream().map(e -> {
             try {

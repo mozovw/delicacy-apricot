@@ -19,9 +19,10 @@ public class RenameEnAllFilePathRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (!CommandUtil.checkArgs(2, CommandConstant.REAFP, args)) return;
+        if (!CommandUtil.checkArgs(3, CommandConstant.REAFP, args)) return;
         String path = String.valueOf(args[1]);
-        operateFile(path, e -> {
+        String value = String.valueOf(args[2]);
+        CommandUtil.operateFile(path,value, e -> {
             String absolutePath = e.getAbsolutePath();
             String replace = absolutePath.replace(path, "");
             String toTargetPath = path + CommandUtil.getPingYin(replace).replaceAll(" ", "");
@@ -39,13 +40,5 @@ public class RenameEnAllFilePathRunner implements CommandLineRunner {
 
     }
 
-
-    private void operateFile(String path, Consumer<File> consumer) {
-        log.info("operating where path is {}", path);
-        File file = new File(path);
-        HashSet<File> fileSet = new HashSet<>();
-        CommandUtil.recursiveFiles(fileSet, file);
-        fileSet.stream().forEach(e -> consumer.accept(e));
-    }
 
 }

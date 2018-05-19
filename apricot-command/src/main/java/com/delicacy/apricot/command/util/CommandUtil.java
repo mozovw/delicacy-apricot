@@ -15,7 +15,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
@@ -60,18 +62,40 @@ public class CommandUtil {
         }
         return true;
     }
+
     public static void recursiveFiles(Set<File> fileSet, File file){
-        File files[] = file.listFiles();
+        recursiveFiles(fileSet,"*",file);
+    }
+    public static void recursiveFiles(Set<File> fileSet,String suffix, File file){
+        File files[] = file.listFiles(e->{
+            if (e.isDirectory())return true;
+            String substring = e.getName().substring(e.getName().lastIndexOf("."));
+            if ("*".equals(suffix)){
+                return true;
+            }
+            if (("*"+substring).equals(suffix)){
+                return true;
+            }
+            return false;
+        });
         if(files == null){
             return;
         }
         if(files.length == 0)return;
         for (File f : files) {
-            if (f.isFile())fileSet.add(f);
             if(f.isDirectory()){
-                recursiveFiles(fileSet,f);
+                recursiveFiles(fileSet,suffix,f);
             }
+            if (f.isFile())fileSet.add(f);
         }
+    }
+
+    public static void operateFile(String path,String suffix, Consumer<File> consumer) {
+        log.info("operating where path is {}", path);
+        File file = new File(path);
+        HashSet<File> fileSet = new HashSet<>();
+        CommandUtil.recursiveFiles(fileSet,suffix, file);
+        fileSet.stream().forEach(e -> consumer.accept(e));
     }
 
 

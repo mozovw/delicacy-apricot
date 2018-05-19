@@ -18,14 +18,15 @@ public class RenameAllFileRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (!CommandUtil.checkArgs(4,CommandConstant.RAF,args)) return;
+        if (!CommandUtil.checkArgs(5,CommandConstant.RAF,args)) return;
         String path = String.valueOf(args[1]);
         String value2 = String.valueOf(args[2]);
         String value3 = String.valueOf(args[3]);
-        operateFile(path, e->{
+        String value4 = String.valueOf(args[4]);
+        CommandUtil.operateFile(path,value2,e->{
             String s1 = e.getName().substring(e.getName().lastIndexOf("."));
             String s0 = e.getName().substring(0,e.getName().lastIndexOf("."));
-            String replace = s0.replaceAll(value2, value3)+s1;
+            String replace = s0.replaceAll(value3, value4)+s1;
             File file = new File(e.getParent(), replace);
             log.info("new filepath is {}",file.getAbsoluteFile());
             e.renameTo(file);
@@ -34,13 +35,6 @@ public class RenameAllFileRunner implements CommandLineRunner {
     }
 
 
-    private void operateFile(String path, Consumer<File> consumer){
-        log.info("operating where path is {}", path);
-        File file = new File(path);
-        HashSet<File> fileSet = new HashSet<>();
-        CommandUtil.recursiveFiles(fileSet,file);
-        fileSet.stream().forEach(e -> consumer.accept(e));
-    }
 
 
 

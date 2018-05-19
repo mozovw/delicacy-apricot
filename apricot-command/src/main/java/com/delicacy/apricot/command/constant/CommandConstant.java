@@ -24,5 +24,6 @@ public interface CommandConstant {
 
      String REAFP = "-reafp";
      String RAF = "-raf";
+     String EAF = "-eaf";
 
 }

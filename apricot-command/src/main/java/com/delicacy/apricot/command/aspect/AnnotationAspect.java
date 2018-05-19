@@ -24,6 +24,7 @@ public class AnnotationAspect {
 
 	@Around("pointcutConfig()")//
 	public Object around(ProceedingJoinPoint point) throws Throwable {
+		//go to
 		Method method = null;
 		try {
 			method = point.getTarget().getClass().getDeclaredMethod("run", String[].class);
@@ -31,6 +32,17 @@ public class AnnotationAspect {
 			e.printStackTrace();
 		}
 		if (method==null)return null;
+		//要不要继续往下
+		Object[] args = point.getArgs();
+		if (args.length==0)return null;
+		String[] args1 = (String[]) args[0];
+		if (args1.length==0)return null;
+		String arg =  args1[0];
+		String substring = arg.substring(1)+"r";
+		String simpleName = point.getTarget().getClass().getSimpleName();
+		String upperCase = getUpperCase(simpleName);
+		if (!upperCase.toLowerCase().equals(substring))return null;
+		//continue
 		String methodName = method.getName();
 		String name = method.getDeclaringClass().getName();
 		log.info("--------------- start {} ---------------" ,name+"."+methodName+"()");
@@ -40,6 +52,18 @@ public class AnnotationAspect {
 		stopwatch.stop();
 		log.info("--------------- end {}, using {} ms---------------" ,name+"."+methodName+"()",stopwatch.getElapsedTime());
 		return result;
+	}
+
+	private String getUpperCase(String string){
+		char[] chars = string.toCharArray();
+		StringBuilder s = new StringBuilder();
+		for (Character c :
+				chars) {
+			if (Character.isUpperCase(c)){
+				s.append(c);
+			}
+		}
+		return s.toString();
 	}
 
 	/*@Before("pointcutConfig()")
