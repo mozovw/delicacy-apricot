@@ -55,17 +55,6 @@ public class CommandUtil {
     }
 
 
-
-    private static boolean checkString(String string){
-        if (null==string||"".equals(string)){
-            return false;
-        }
-        return true;
-    }
-
-    public static void recursiveFiles(Set<File> fileSet, File file){
-        recursiveFiles(fileSet,"*",file);
-    }
     public static void recursiveFiles(Set<File> fileSet,String suffix, File file){
         File files[] = file.listFiles(e->{
             if (e.isDirectory())return true;
