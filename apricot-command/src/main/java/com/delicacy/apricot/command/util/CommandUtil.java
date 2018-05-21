@@ -56,13 +56,17 @@ public class CommandUtil {
 
 
     public static void recursiveFiles(Set<File> fileSet,String suffix, File file){
+        if (fileSet==null)return;
+        if(StringUtils.isEmpty(suffix))return;
+        if (!file.exists())return;
         File files[] = file.listFiles(e->{
             if (e.isDirectory())return true;
+            if (!e.getName().contains("."))return false;
             String substring = e.getName().substring(e.getName().lastIndexOf("."));
             if ("*".equals(suffix)){
                 return true;
             }
-            if (("*"+substring).equals(suffix)){
+            if (("*"+substring).equalsIgnoreCase(suffix)){
                 return true;
             }
             return false;
