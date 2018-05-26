@@ -26,6 +26,7 @@ public class EncodeAllFileRunner implements CommandLineRunner {
         String value3 = String.valueOf(args[3]);
         CommandUtil.operateFile(path, value2,e -> {
             String charset = getCharset(e);
+            log.info("old filecode is {}",charset);
             moveFile(value3, e, charset);
         });
 
