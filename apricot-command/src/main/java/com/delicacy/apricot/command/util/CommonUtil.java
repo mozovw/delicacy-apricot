@@ -1,6 +1,5 @@
 package com.delicacy.apricot.command.util;
 
-import com.delicacy.apricot.command.constant.CommandConstant;
 import lombok.extern.slf4j.Slf4j;
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
@@ -18,7 +17,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 /**
  * 工具类
@@ -27,14 +25,14 @@ import java.util.function.Predicate;
  * @create 2018-05-18 11:28
  **/
 @Slf4j
-public class CommandUtil {
+public class CommonUtil {
 
 
     public static boolean checkArgs(int len, String s1, String... args){
         if (args==null||args.length==0){
             return false;
         }
-        if (args.length<1 || !args[0].toLowerCase().trim().equals(s1)){
+        if (args.length<1 || !args[0].toLowerCase().trim().equalsIgnoreCase(s1)){
             return false;
         }
         if (args.length!=len){
@@ -87,7 +85,7 @@ public class CommandUtil {
         log.info("operating where path is {}", path);
         File file = new File(path);
         HashSet<File> fileSet = new HashSet<>();
-        CommandUtil.recursiveFiles(fileSet,suffix, file);
+        CommonUtil.recursiveFiles(fileSet,suffix, file);
         fileSet.stream().forEach(e -> consumer.accept(e));
     }
 
@@ -132,6 +130,24 @@ public class CommandUtil {
     }
 
 
+    public static String getCommand(Object object) {
+        String simpleName = getCapitalInitials(object.getClass().getSimpleName());
+        String command = simpleName.substring(0,simpleName.length()-1);
+        String capitalInitials = "-"+getCapitalInitials(command);
+        return capitalInitials;
+    }
+
+    public static String getCapitalInitials(String string){
+        char[] chars = string.toCharArray();
+        StringBuilder s = new StringBuilder();
+        for (Character c :
+                chars) {
+            if (Character.isUpperCase(c)){
+                s.append(c);
+            }
+        }
+        return s.toString();
+    }
 
 
 

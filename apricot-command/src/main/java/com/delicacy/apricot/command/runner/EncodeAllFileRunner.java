@@ -1,8 +1,8 @@
 package com.delicacy.apricot.command.runner;
 
-import com.delicacy.apricot.command.constant.CommandConstant;
+
 import com.delicacy.apricot.command.util.CharSetUtil;
-import com.delicacy.apricot.command.util.CommandUtil;
+import com.delicacy.apricot.command.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
@@ -20,11 +20,12 @@ public class EncodeAllFileRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (!CommandUtil.checkArgs(4, CommandConstant.EAF, args)) return;
+        String command = CommonUtil.getCommand(this);
+        if (!CommonUtil.checkArgs(4, command, args)) return;
         String path = String.valueOf(args[1]);
         String value2 = String.valueOf(args[2]);
         String value3 = String.valueOf(args[3]);
-        CommandUtil.operateFile(path, value2,e -> {
+        CommonUtil.operateFile(path, value2, e -> {
             String charset = getCharset(e);
             log.info("old filecode is {}",charset);
             moveFile(value3, e, charset);

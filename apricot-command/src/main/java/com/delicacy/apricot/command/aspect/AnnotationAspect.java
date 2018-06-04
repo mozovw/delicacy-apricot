@@ -1,12 +1,10 @@
 package com.delicacy.apricot.command.aspect;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.Arrays;
 
+import com.delicacy.apricot.command.util.CommonUtil;
 import com.delicacy.apricot.command.util.Stopwatch;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
@@ -39,9 +37,8 @@ public class AnnotationAspect {
 		if (args1.length==0)return null;
 		String arg =  args1[0];
 		String substring = arg.substring(1)+"r";
-		String simpleName = point.getTarget().getClass().getSimpleName();
-		String upperCase = getUpperCase(simpleName);
-		if (!upperCase.toLowerCase().equals(substring))return null;
+		String simpleName = point.getTarget().getClass().getSimpleName().trim();
+		if (!CommonUtil.getCapitalInitials(simpleName).equalsIgnoreCase(substring))return null;
 		//continue
 		String methodName = method.getName();
 		String name = method.getDeclaringClass().getName();
@@ -54,17 +51,7 @@ public class AnnotationAspect {
 		return result;
 	}
 
-	private String getUpperCase(String string){
-		char[] chars = string.toCharArray();
-		StringBuilder s = new StringBuilder();
-		for (Character c :
-				chars) {
-			if (Character.isUpperCase(c)){
-				s.append(c);
-			}
-		}
-		return s.toString();
-	}
+
 
 	/*@Before("pointcutConfig()")
 	public void before(JoinPoint joinPoint){

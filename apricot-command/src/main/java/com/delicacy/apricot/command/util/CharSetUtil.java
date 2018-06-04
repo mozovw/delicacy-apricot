@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.mozilla.universalchardet.UniversalDetector;
 import org.springframework.util.StringUtils;
 
-import java.io.InputStream;
+import java.io.*;
 
 
 @Slf4j
@@ -12,25 +12,41 @@ public class CharSetUtil {
 
 
     public static String getCharset(InputStream is) {
-
+        byte[] buf = new byte[4096];
+        // (1)
         UniversalDetector detector = new UniversalDetector(null);
+
+        // (2)
+        int nread;
         try {
-            byte[] bytes = new byte[1024];
-            int nread;
-            if ((nread = is.read(bytes)) > 0 && !detector.isDone()) {
-                detector.handleData(bytes, 0, nread);
+            while ((nread = is.read(buf)) > 0 && !detector.isDone()) {
+                detector.handleData(buf, 0, nread);
             }
-        } catch (Exception localException) {
-            log.info("detected code:", localException);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        // (3)
         detector.dataEnd();
-        String encode = detector.getDetectedCharset();
-        /** default UTF-8 */
-        if (StringUtils.isEmpty(encode)) {
-            encode = "UTF-8";
+
+        // (4)
+        String encoding = detector.getDetectedCharset();
+        if (StringUtils.isEmpty(encoding)) {
+            ExchangeUtil s = new ExchangeUtil();
+            encoding = ExchangeUtil.javaname[s.detectEncoding(buf)];
         }
+        if (StringUtils.isEmpty(encoding)) {
+            encoding = "UTF-8";
+        }
+        // (5)
         detector.reset();
-        return encode;
+        return encoding;
     }
+
+//    public static void main(String[] args) {
+//        ExchangeUtil s = new ExchangeUtil();
+//
+//        String ss = ExchangeUtil.javaname[s.detectEncoding(new File("F:\\workspaces\\idea_workspaces\\boss_workspace\\boss-config-server\\src\\main\\resources\\application.properties"))];
+//        System.out.println(ss);
+//    }
 
 }
