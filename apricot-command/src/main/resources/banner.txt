@@ -1,0 +1,12 @@
+
+路径下所有匹配类型(如:*.properties)文件的转码
+java -jar "F:\workspaces\idea_workspaces\delicacy_workspace\delicacy-apricot\apricot-command\target\apricot-command-0.0.1-SNAPSHOT.jar" -eaf filepath *.properties utf-8
+
+路径下所有匹配类型(如:*.properties)文件的替换文件名
+java -jar "F:\workspaces\idea_workspaces\delicacy_workspace\delicacy-apricot\apricot-command\target\apricot-command-0.0.1-SNAPSHOT.jar" -raf filepath *.properties aa bb
+
+路径下所有匹配类型(如:*.properties)文件的中文换英文
+java -jar "F:\workspaces\idea_workspaces\delicacy_workspace\delicacy-apricot\apricot-command\target\apricot-command-0.0.1-SNAPSHOT.jar" -reafp filepath *.properties
+
+路径下所有匹配类型(如:*.properties)文件的测试文件编码
+java -jar "F:\workspaces\idea_workspaces\delicacy_workspace\delicacy-apricot\apricot-command\target\apricot-command-0.0.1-SNAPSHOT.jar" -tfc filepath

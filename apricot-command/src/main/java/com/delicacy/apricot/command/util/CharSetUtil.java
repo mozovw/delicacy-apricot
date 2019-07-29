@@ -30,11 +30,14 @@ public class CharSetUtil {
 
         // (4)
         String encoding = detector.getDetectedCharset();
+
         if (StringUtils.isEmpty(encoding)) {
-            ExchangeUtil s = new ExchangeUtil();
-            encoding = ExchangeUtil.javaname[s.detectEncoding(buf)];
-        }
-        if (StringUtils.isEmpty(encoding)) {
+            /*boolean unicode = isUnicode(new String(buf));
+            if (!unicode){
+                encoding = "UTF-8";
+            }else {
+                encoding = "UNICODE";
+            }*/
             encoding = "UTF-8";
         }
         // (5)
@@ -42,11 +45,43 @@ public class CharSetUtil {
         return encoding;
     }
 
-//    public static void main(String[] args) {
-//        ExchangeUtil s = new ExchangeUtil();
-//
-//        String ss = ExchangeUtil.javaname[s.detectEncoding(new File("F:\\workspaces\\idea_workspaces\\boss_workspace\\boss-config-server\\src\\main\\resources\\application.properties"))];
-//        System.out.println(ss);
-//    }
+  /*  public static void main(String[] args) {
+        try {
+            String charset = getCharset(new FileInputStream(new File("F:\\workspaces\\idea_workspaces\\boss_workspace\\boss-constant-server\\src\\main\\resources\\application.properties")));
+            System.out.println(charset);
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }*/
+
+    /*public static boolean isUnicode(String unicode) {
+        StringBuffer string = new StringBuffer();
+        String[] hex = unicode.split("\\\\u");
+        for (int i = 1; i < hex.length; i++) {
+            // 转换出每一个代码点
+            int data;
+            try {
+                data = Integer.parseInt(hex[i], 16);
+            }catch (NumberFormatException e){
+                continue;
+            }
+            string.append((char) data);
+        }
+        if (isChinese(string.toString()))return true;
+        return false;
+    }
+
+
+    public static final boolean isChinese(String chineseStr) {
+        char[] charArray = chineseStr.toCharArray();
+        for (int i = 0; i < charArray.length; i++) {
+            if ((charArray[i] >= 0x4e00) && (charArray[i] <= 0x9fbb)) {
+                return true;
+            }
+        }
+        return false;
+    }
+*/
 
 }
