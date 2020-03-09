@@ -4,17 +4,17 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.delicacy.apricot.blog.mapper.UserMapper">
     <select id="loadUserByUsername" resultType="com.delicacy.apricot.blog.bean.User">
-        SELECT * FROM user WHERE username=#{username}
+        SELECT * FROM document WHERE username=#{username}
     </select>
     <insert id="reg" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO user set username=#{username},password=#{password},nickname=#{nickname}
+        INSERT INTO document set username=#{username},password=#{password},nickname=#{nickname}
     </insert>
     <update id="updateUserEmail">
-        UPDATE user set email=#{email} WHERE id=#{id}
+        UPDATE document set email=#{email} WHERE id=#{id}
     </update>
     <select id="getUserByNickname" resultMap="BaseResultMap">
-        SELECT u.*,r.`id` AS rid,r.`name` AS rname FROM user u,roles r,roles_user ru WHERE u.`id`=ru.`uid` AND
-        r.`id`=ru.`rid` AND u.`id` NOT IN(SELECT u.`id` FROM user u,roles_user ru WHERE u.`id`=ru.`uid` AND ru.`rid`=1)
+        SELECT u.*,r.`id` AS rid,r.`username` AS rname FROM document u,roles r,roles_user ru WHERE u.`id`=ru.`uid` AND
+        r.`id`=ru.`rid` AND u.`id` NOT IN(SELECT u.`id` FROM document u,roles_user ru WHERE u.`id`=ru.`uid` AND ru.`rid`=1)
         <choose>
             <when test="nickname!=null and nickname!=''">
                 and u.nickname like concat('%',#{nickname},'%') ORDER BY u.`id`
@@ -25,7 +25,7 @@
         </choose>
     </select>
     <select id="getUserById" resultMap="BaseResultMap">
-        SELECT u.*,r.`id` AS rid,r.`name` AS rname FROM user u,roles r,roles_user ru WHERE u.`id`=ru.`uid` AND
+        SELECT u.*,r.`id` AS rid,r.`username` AS rname FROM document u,roles r,roles_user ru WHERE u.`id`=ru.`uid` AND
         r.`id`=ru.`rid` AND u.`id`=#{id}
     </select>
     <resultMap id="BaseResultMap" type="com.delicacy.apricot.blog.bean.User">
@@ -46,10 +46,10 @@
         select * from roles;
     </select>
     <update id="updateUserEnabled">
-        UPDATE user set enabled=#{enabled} WHERE id=#{uid}
+        UPDATE document set enabled=#{enabled} WHERE id=#{uid}
     </update>
     <delete id="deleteUserById">
-        DELETE FROM user WHERE id=#{id}
+        DELETE FROM document WHERE id=#{id}
     </delete>
     <delete id="deleteUserRolesByUid">
         DELETE FROM roles_user WHERE uid=#{id}

@@ -21,7 +21,7 @@
         WHERE id=#{id}
     </update>
     <select id="getArticleByState" resultType="com.delicacy.apricot.blog.bean.Article">
-        SELECT a.id,a.`title`,a.`editTime`,a.`pageView`,a.`state`,u.`nickname`,c.`cateName`,a.uid FROM article a,user
+        SELECT a.id,a.`title`,a.`editTime`,a.`pageView`,a.`state`,u.`nickname`,c.`cateName`,a.uid FROM article a,document
         u,category c WHERE a.`cid`=c.`id` AND a.`uid`=u.`id`
         <if test="state!=-2">
             and a.uid=#{uid}
@@ -38,7 +38,7 @@
         ORDER BY a.editTime DESC limit #{start},#{count};
     </select>
     <select id="getArticleByStateByAdmin" resultType="com.delicacy.apricot.blog.bean.Article">
-        SELECT a.id,a.`title`,a.`editTime`,a.`pageView`,a.`state`,u.`nickname`,c.`cateName`,a.uid FROM article a,user
+        SELECT a.id,a.`title`,a.`editTime`,a.`pageView`,a.`state`,u.`nickname`,c.`cateName`,a.uid FROM article a,document
         u,category c WHERE a.`cid`=c.`id` AND a.`uid`=u.`id` and a.state=1
         <if test="keywords!=null">
             AND title LIKE concat('%',#{keywords},'%')
@@ -73,7 +73,7 @@
         </foreach>
     </delete>
     <select id="getArticleById" parameterType="Long" resultMap="BaseResultMap">
-        SELECT a.*,t.`tagName`,t.`id` AS tid,u.`nickname`,c.`cateName` FROM article a LEFT JOIN article_tags ats ON a.`id`=ats.`aid` LEFT JOIN tags t ON ats.`tid`=t.`id` LEFT JOIN user u ON a.`uid`=u.`id` LEFT JOIN category c ON a.`cid`=c.`id` WHERE a.id=#{aid}
+        SELECT a.*,t.`tagName`,t.`id` AS tid,u.`nickname`,c.`cateName` FROM article a LEFT JOIN article_tags ats ON a.`id`=ats.`aid` LEFT JOIN tags t ON ats.`tid`=t.`id` LEFT JOIN document u ON a.`uid`=u.`id` LEFT JOIN category c ON a.`cid`=c.`id` WHERE a.id=#{aid}
     </select>
 
     <resultMap id="BaseResultMap" type="com.delicacy.apricot.blog.bean.Article">

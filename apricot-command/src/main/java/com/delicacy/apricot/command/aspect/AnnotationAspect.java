@@ -58,8 +58,8 @@ public class AnnotationAspect {
 		try {
 			Method method = joinPoint.getTarget().getClass().getDeclaredMethod("run", String[].class);
 			String methodName = method.getName();
-			String name = method.getDeclaringClass().getName();
-			log.info("--------------- start {} ---------------" ,name+"."+methodName+"()");
+			String username = method.getDeclaringClass().getName();
+			log.info("--------------- start {} ---------------" ,username+"."+methodName+"()");
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
@@ -70,8 +70,8 @@ public class AnnotationAspect {
 		try {
 			Method method = joinPoint.getTarget().getClass().getDeclaredMethod("run", String[].class);
 			String methodName = method.getName();
-			String name = method.getDeclaringClass().getName();
-			log.info("--------------- end {} ---------------" ,name+"."+methodName+"()");
+			String username = method.getDeclaringClass().getName();
+			log.info("--------------- end {} ---------------" ,username+"."+methodName+"()");
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
