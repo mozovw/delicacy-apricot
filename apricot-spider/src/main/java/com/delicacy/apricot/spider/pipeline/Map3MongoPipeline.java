@@ -45,8 +45,8 @@ public class Map3MongoPipeline extends FilePersistentBase implements Pipeline {
         if (!all.isEmpty()) {
             Object obj = all.get("map");
             LinkedHashMap<Integer, LinkedHashMap<Integer, LinkedHashMap<String, Object>>> maps = (LinkedHashMap<Integer, LinkedHashMap<Integer, LinkedHashMap<String, Object>>>) obj;
-            maps.entrySet().stream().forEach(e->{
-                e.getValue().entrySet().stream().forEach(ee->{
+            maps.entrySet().stream().forEach(e -> {
+                e.getValue().entrySet().stream().forEach(ee -> {
                     save(ee.getValue());
                 });
             });
@@ -54,11 +54,17 @@ public class Map3MongoPipeline extends FilePersistentBase implements Pipeline {
     }
 
     private void save(LinkedHashMap<String, Object> all) {
+        if (ObjectUtils.isEmpty(all)) {
+            return;
+        }
         String string = JSON.toJSONString(all);
         String sign = DigestUtils.md5DigestAsHex(string.getBytes());
         Query query = new Query(Criteria.where("sign").is(sign));
         boolean exists = mongoTemplate.exists(query, Map.class, this.collectName);
-        if (exists) return;
+        if (exists) {
+            log.info("已经存在");
+            return;
+        }
 
         all.put("sign", sign);
         long id = snowflake.nextId();

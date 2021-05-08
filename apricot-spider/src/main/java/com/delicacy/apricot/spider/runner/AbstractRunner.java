@@ -14,6 +14,7 @@ import java.util.Arrays;
 
 @Slf4j
 public abstract class AbstractRunner implements CommandLineRunner {
+    static int threadNum = Runtime.getRuntime().availableProcessors();
 
     @Autowired
     protected MongoTemplate mongoTemplate;

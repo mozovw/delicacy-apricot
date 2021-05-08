@@ -15,6 +15,11 @@ import us.codecraft.webmagic.Task;
 import us.codecraft.webmagic.pipeline.Pipeline;
 import us.codecraft.webmagic.utils.FilePersistentBase;
 
+import javax.swing.text.DateFormatter;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -50,33 +55,43 @@ public class Map2MongoPipeline extends FilePersistentBase implements Pipeline {
             });
         }
     }
+    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private void save(LinkedHashMap<String, Object> all) {
+        if (ObjectUtils.isEmpty(all)) {
+            return;
+        }
         String string = JSON.toJSONString(all);
         String sign = DigestUtils.md5DigestAsHex(string.getBytes());
         Query query = new Query(Criteria.where("sign").is(sign));
         boolean exists = mongoTemplate.exists(query, Map.class, this.collectName);
-        if (exists) return;
+        if (exists){
+            return;
+        }
 
         all.put("sign", sign);
         long id = snowflake.nextId();
         all.put("id", id);
+        all.put("update_time",LocalDateTime.now().format(dateTimeFormatter));
         // update
         if (!ObjectUtils.isEmpty(arrTxt)) {
             Criteria criteria = Criteria.where("1").is(all.get("1"));
-            Arrays.stream(arrTxt).forEach(e -> {
+            Arrays.stream(arrTxt).filter(e->!ObjectUtils.isEmpty(all.get(e))).forEach(e -> {
                 criteria.and(e).is(all.get(e).toString());
             });
-            exists = mongoTemplate.exists(new Query(criteria), Map.class, this.collectName);
-            if (exists) {
+            Map one = mongoTemplate.findOne(new Query(criteria), Map.class, this.collectName);
+            if (one != null && !one.isEmpty()){
                 Update update = new Update();
-                all.entrySet().stream().forEach(e -> {
+                all.entrySet().forEach(e -> {
                     update.set(e.getKey(), e.getValue());
                 });
+                log.info("更新，信息：{}",update);
+                query = new Query(Criteria.where("sign").is(one.get("sign")));
                 mongoTemplate.updateFirst(query, update, collectName);
                 return;
             }
         }
+        log.info("新增，信息：{}",all);
         mongoTemplate.save(all, collectName);
     }
 }

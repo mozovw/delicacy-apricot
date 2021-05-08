@@ -1,8 +1,12 @@
 package com.delicacy.apricot.spider.processor;
 
+import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.delicacy.apricot.spider.driver.WebDriverPool;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
 import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
@@ -10,9 +14,12 @@ import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
 import net.sourceforge.pinyin4j.format.HanyuPinyinVCharType;
 import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 import org.openqa.selenium.WebDriver;
+import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.processor.PageProcessor;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
@@ -25,6 +32,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 public abstract class AbstactProcessor implements PageProcessor {
 
     static HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
+    private static Set<String> stringSet = new ConcurrentSkipListSet<>();
 
     static {
         format.setCaseType(HanyuPinyinCaseType.LOWERCASE);
@@ -32,12 +40,27 @@ public abstract class AbstactProcessor implements PageProcessor {
         format.setVCharType(HanyuPinyinVCharType.WITH_V);
     }
 
+    ObjectMapper objectMapper = new ObjectMapper();
     private Site site;
     private volatile WebDriverPool webDriverPool;
 
     {
         String path = this.getClass().getResource("/chromedriver.exe").getPath();
         System.getProperties().setProperty("webdriver.chrome.driver", path);
+    }
+
+    @SneakyThrows
+    protected String json(Object o) {
+        return objectMapper.writeValueAsString(o);
+    }
+
+    @SneakyThrows
+    protected <T> T json2Obj(String o, Class<T> clazz) {
+        return objectMapper.readValue(o, clazz);
+    }
+
+    protected boolean isEmpty(Object o) {
+        return ObjectUtil.isEmpty(o);
     }
 
     @Override
@@ -48,6 +71,7 @@ public abstract class AbstactProcessor implements PageProcessor {
 
     /**
      * 是否存在中文
+     *
      * @param inputString
      * @return
      */
@@ -57,22 +81,25 @@ public abstract class AbstactProcessor implements PageProcessor {
             char[] input = inputString.trim().toCharArray();
             boolean flag = false;
             for (int i = 0; i < input.length; i++) {
-                if (Character.toString(input[i]).matches("[\\u4E00-\\u9FA5]+")) flag = true;
+                if (Character.toString(input[i]).matches("[\\u4E00-\\u9FA5]+")) {
+                    flag = true;
+                }
             }
             return flag;
         }
         return false;
     }
 
-    protected String trim(String str){
+    protected String trim(String str) {
         str = str.replace((char) 160, ' ');
         return str.trim();
     }
 
     /**
      * 中文转成拼音
+     *
      * @param inputString
-     * @param only 只有拼音吗
+     * @param only        只有拼音吗
      * @return
      */
     protected String getPingYin(String inputString, boolean only) {
@@ -109,13 +136,14 @@ public abstract class AbstactProcessor implements PageProcessor {
 
     /**
      * 获取WebDriver
+     *
      * @return
      */
     protected WebDriver getWebDriver() {
         if (webDriverPool == null)
             synchronized (WebDriverPool.class) {
                 if (webDriverPool == null) {
-                    webDriverPool = new WebDriverPool(10);
+                    webDriverPool = new WebDriverPool(Runtime.getRuntime().availableProcessors());
                 }
             }
         try {
@@ -128,6 +156,7 @@ public abstract class AbstactProcessor implements PageProcessor {
 
     /**
      * 将webDriverPool返回到池子
+     *
      * @param webDriver
      */
     protected void returnToPool(WebDriver webDriver) {
@@ -139,10 +168,9 @@ public abstract class AbstactProcessor implements PageProcessor {
             }
     }
 
-    private static Set<String> stringSet = new ConcurrentSkipListSet<>();
-
     /**
      * 过滤文本
+     *
      * @param replace
      * @return
      */
@@ -154,6 +182,45 @@ public abstract class AbstactProcessor implements PageProcessor {
             return true;
         }
         return false;
+    }
+
+    protected static class PageProcessor {
+        Page page;
+        JSONObject jsonObject;
+
+        public PageProcessor(Page page, JSONObject jsonObject) {
+            this.page = page;
+            this.jsonObject = jsonObject;
+        }
+
+        private void transfer(Page page,JSONObject jsonObject ,String a, String b) {
+            if (b == null) {
+                page.putField(a, null);
+                return;
+            }
+            Object obj = jsonObject.get(b);
+            if (obj == null) {
+                page.putField(a, null);
+                return;
+            }
+            String string = null;
+            if (obj instanceof String) {
+                string = String.valueOf(obj);
+            } else if (obj instanceof BigDecimal) {
+                string = ((BigDecimal) obj).setScale(3, RoundingMode.HALF_UP).toString();
+            } else if (obj instanceof Long) {
+                string = ((Long) obj).toString();
+            } else if (obj instanceof Integer) {
+                string = ((Integer) obj).toString();
+            }
+            page.putField(a, string);
+        }
+
+        public void transfer(String a, String b) {
+            if (jsonObject!=null&&page!=null){
+                transfer(page,jsonObject,a,b);
+            }
+        }
     }
 
 

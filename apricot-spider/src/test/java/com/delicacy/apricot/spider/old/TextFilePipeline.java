@@ -83,6 +83,13 @@ public class TextFilePipeline extends FilePersistentBase implements Pipeline {
         }
     }
 
+    public static void main(String[] args) throws IOException {
+        PrintWriter  printWriter = new PrintWriter(new FileWriter(new File("E:\\喜马拉雅下载\\晓书童频道"), true));
+        printWriter.write("");
+        printWriter.println("\n");
+        printWriter.flush();
+    }
+
     private Integer getNum(File o1) {
         String s;
         String name = o1.getName();
