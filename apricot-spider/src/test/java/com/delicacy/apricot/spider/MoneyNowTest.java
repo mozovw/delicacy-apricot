@@ -68,25 +68,99 @@ public class MoneyNowTest extends ApricotSpiderApplicationTests {
      * 50 2816
      * 61 6400
      * 海天
-     * 13149
+     * 2027
      */
     @Test
-    public void test22() {
+    public void haitian() {
         String freeMoney = "61";
-        String tiexianlv = "0.09";
-        String zengzhanglv = "0.16";
-        String zengzhanglv_yihou = "0.08";
-        int year = 10;
+        String tiexianlv = "0.115";
+        String zengzhanglv = "0.19";
+        String zengzhanglv_yihou = "0.10";
+        int year = 5;
         valueCalc(freeMoney, tiexianlv, zengzhanglv, zengzhanglv_yihou, year);
     }
 
+    /**
+     * 茅台
+     */
     @Test
-    public void test222() {
-        String freeMoney = "470";
-        String tiexianlv = "0.09";
-        String zengzhanglv = "0.12";
-        String zengzhanglv_yihou = "0.06";
-        int year = 10;
+    public void maotai() {
+        String freeMoney = "979";
+        String tiexianlv = "0.1";
+        String zengzhanglv = "0.06";
+        String zengzhanglv_yihou = "0.03";
+        int year = 5;
+        valueCalc(freeMoney, tiexianlv, zengzhanglv, zengzhanglv_yihou, year);
+    }
+
+    /**
+     * 泸州
+     * 9966
+     */
+    @Test
+    public void luzhou() {
+        String freeMoney = "60";
+        String tiexianlv = "0.115";
+        String zengzhanglv = "0.30";
+        String zengzhanglv_yihou = "0.10";
+        int year = 5;
+        valueCalc(freeMoney, tiexianlv, zengzhanglv, zengzhanglv_yihou, year);
+    }
+
+    /**
+     * 五粮液
+     * 9966
+     */
+    @Test
+    public void wuliangye() {
+        String freeMoney = "200";
+        String tiexianlv = "0.10";
+        String zengzhanglv = "0.15";
+        String zengzhanglv_yihou = "0.07";
+        int year = 5;
+        valueCalc(freeMoney, tiexianlv, zengzhanglv, zengzhanglv_yihou, year);
+    }
+
+    /**
+     * 爱尔眼科
+     * 2355
+     */
+    @Test
+    public void aieryanke() {
+        String freeMoney = "21";
+        String tiexianlv = "0.115";
+        String zengzhanglv = "0.20";
+        String zengzhanglv_yihou = "0.10";
+        int year = 5;
+        valueCalc(freeMoney, tiexianlv, zengzhanglv, zengzhanglv_yihou, year);
+    }
+
+
+    /**
+     * 迈瑞
+     * 4499
+     */
+    @Test
+    public void mairui() {
+        String freeMoney = "65";
+        String tiexianlv = "0.115";
+        String zengzhanglv = "0.20";
+        String zengzhanglv_yihou = "0.10";
+        int year = 5;
+        valueCalc(freeMoney, tiexianlv, zengzhanglv, zengzhanglv_yihou, year);
+    }
+
+    /**
+     * 亿纬锂能
+     * 2136
+     */
+    @Test
+    public void yiweilineng() {
+        String freeMoney = "15";
+        String tiexianlv = "0.115";
+        String zengzhanglv = "0.26";
+        String zengzhanglv_yihou = "0.10";
+        int year = 5;
         valueCalc(freeMoney, tiexianlv, zengzhanglv, zengzhanglv_yihou, year);
     }
 

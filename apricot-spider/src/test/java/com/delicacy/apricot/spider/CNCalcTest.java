@@ -224,27 +224,25 @@ public class CNCalcTest extends ApricotSpiderApplicationTests {
         fund_rank_position_do("jin1zhou");
         System.out.println("================================");
         dropCollection( analysis_table);
-        Query query = new Query();
 
-        List<Map> maps1 = mongoTemplate.find(query, Map.class, "analysis_fund_rank_position");
-
-        List<Map> maps2 = mongoTemplate.find(query, Map.class, "analysis_fund_rank_position_2021_05_04");
-
-//        List<Map> maps3 = mongoTemplate.find(query, Map.class, "analysis_fund_rank_position_2021_05_04");
+        List<List<Map>> lists = getLists(
+//                "analysis_fund_rank_position_2021_05_04",
+                "analysis_fund_rank_position_2021_05_06",
+                "analysis_fund_rank_position_2021_05_11",
+                "analysis_fund_rank_position"
+        );
 
         List<String> objects = new ArrayList<>();
         Map<String,Integer> keyValue = new HashMap<>();
-        maps1.forEach(e->{
+        lists.get(lists.size()-1).forEach(e->{
             String symbol = e.get("symbol").toString();
             String name = e.get("name").toString();
             String key = symbol + ":" + name;
-            String count1 = e.get("count").toString();
-            maps2.forEach(ee->{
-                if (symbol.equals(ee.get("symbol"))){
-                    keyValue.put(key,Integer.parseInt(count1) + Integer.parseInt(ee.get("count").toString()));
-                }
+
+            lists.stream().limit(lists.size()-1).forEach(ee->{
+                nextCalc(ee, keyValue, key);
             });
-//            nextCalc(maps3, keyValue, symbol);
+
             Integer result = keyValue.get(key);
             if (result!=null){
                 addRecord(objects,analysis_table, symbol, result, name);
@@ -255,17 +253,26 @@ public class CNCalcTest extends ApricotSpiderApplicationTests {
         objects.forEach(System.out::println);
     }
 
-    private void nextCalc(List<Map> maps3, Map<String, Integer> keyValue, Object symbol1) {
-        maps3.forEach(ee->{
-            Object symbol = ee.get("symbol");
-            if (symbol1.equals(symbol)){
-                 keyValue.forEach((k, v)->{
-                    if (k.equals(symbol)){
-                        int result = v + Integer.parseInt(ee.get("count").toString());
-                        keyValue.put(k,result);
-                    }
-                });
-            }
+    private List<List<Map>> getLists(String... strings) {
+        Query query = new Query();
+        return Arrays.stream(strings).map(e-> mongoTemplate.find(query, Map.class, e)).collect(Collectors.toList());
+    }
+
+    private void nextCalc(List<Map> maps, Map<String, Integer> keyValue, Object key) {
+        maps.stream().filter(
+                ee->{
+                    String symbol = ee.get("symbol").toString();
+                    String name = ee.get("name").toString();
+                    String sm = symbol + ":" + name;
+                    return key.equals(sm);
+                }
+        ).forEach(ee->{
+            String symbol = ee.get("symbol").toString();
+            String name = ee.get("name").toString();
+            String count = ee.get("count").toString();
+            String sm = symbol + ":" + name;
+            Integer sum = keyValue.get(sm);
+            keyValue.put(sm,sum==null?Integer.parseInt(count):sum+Integer.parseInt(count));
         });
     }
 
@@ -293,7 +300,7 @@ public class CNCalcTest extends ApricotSpiderApplicationTests {
         Query query = new Query();
         query.addCriteria(new Criteria().andOperator(
                 Criteria.where("type").in("gpx", "hhx", "ETF").
-                        and(Objects.nonNull(leixing)?"jin1yue":leixing).ne("")
+                        and(Objects.nonNull(leixing)?leixing:"jin1yue").ne("")
         ));
         List<Map> list = mongoTemplate.find(query, Map.class, "aijijin_fund_rank");
         Collections.sort(list, Comparator.comparing(e -> Double.valueOf((String) ((Map) e).get(Objects.nonNull(leixing)?"jin1yue":leixing))).reversed());
